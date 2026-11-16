@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class EmployeeController {
         this.service = service;
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping
     //@ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<EmployeeResponse> create(@Valid @RequestBody CreateEmployeeRequest request){
@@ -35,7 +37,7 @@ public class EmployeeController {
     }
 
 
-
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping
     public EmpPaginationResponse getAll(
             @RequestParam(defaultValue = "0") int page,
@@ -64,31 +66,34 @@ public class EmployeeController {
         );
     }
 
-
-
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/{id}")
     public EmployeeResponse getById(@PathVariable Long id){
         return service.getById(id);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public EmployeeResponse updateEmployee(@PathVariable Long id,
                                    @RequestBody CreateEmployeeRequest request){
         return service.update(id, request);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id){
         service.delete(id);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAll(){
         service.deleteALLEmployee();
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/statistics")
     public ResponseEntity<EmployeeStatisticsResponse> getEmployeeStatistics() {
 
